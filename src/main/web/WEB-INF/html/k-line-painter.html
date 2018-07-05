@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://html54stock.outofmemory.cn/k-painter.v1.htm -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=GBK">
+
+    <style type="text/css">
+        .wrap {
+            width: 986px;
+            zoom: 1;
+            margin: auto;
+        }
+
+        body {
+            margin: 4px;
+        }
+
+        BODY, A, P, SPAN, TD {
+            font-family: Arial, "宋体";
+            font-size: 14px;
+        }
+
+        h1 {
+            margin: 0 0 10px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 0px 20px 5px 10px;
+        }
+
+        h1 a {
+            font-family: "微软雅黑", "黑体";
+            font-size: 18px;
+            color: black;
+            text-decoration: none
+        }
+
+        h2 {
+            font-family: "微软雅黑", "黑体";
+            font-size: 16px;
+            margin: 10px 0 5px 2px;
+            padding: 8px 0px 0px 2px;
+        }
+
+        pre {
+            margin: 4px;
+            padding: 5px 0 0 30px !important;
+            color: gray;
+            font-size: .8em;
+            line-height: 20px;
+        }
+
+        .foot {
+            text-align: center
+        }
+
+        .foot a {
+            font-size: 9pt
+        }
+
+    </style>
+    <style type="text/css">
+        .kke_menus_tab_normal {
+            width: 47px;
+            height: 25px;
+            line-height: 25px;
+            margin-top: 3px;
+            float: left;
+            background: #EFF5FF;
+            border: 1px solid #EFF5FF;
+            color: #08237a;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .kke_menus_tab_active {
+            background-color: #ffffff;
+            border-top: 2px solid #062784;
+            border-left: 1px solid #dde4f4;
+            border-right: 1px solid #dde4f4;
+            border-bottom: 1px solid #ffffff;
+            cursor: pointer;
+        }
+
+        .kke_menus_tab_edage {
+            width: 100%;
+            height: 30px;
+            border-top: 1px solid #dde4f4;
+            border-bottom: 1px solid #dde4f4;
+            background-color: #EFF5FF;
+            position: relative;
+            z-index: 233;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>k line painter</title>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/loading.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/util.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/absPainter.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/ajax.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/crossLines.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/axis-x.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/tip.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/linepainter.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/volumePainter.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/axis-y.js" type="text/javascript" charset="GBK"></script>
+    <script src="./js/chartEventHelper.js" type="text/javascript" charset="GBK"></script>
+    <script type="text/javascript" src="./js/controller.js" charset="GBK"></script>
+    <script type="text/javascript" src="./js/k-data.js"></script>
+    <script type="text/javascript" src="./js/tag.js"></script>
+    <script type="text/javascript" src="./js/window.js"></script>
+    <script type="text/javascript" src="./js/kline.js"></script>
+    <script type="text/javascript">
+        /*
+        html5行情图库
+        author:yukaizhao
+        blog:http://www.cnblogs.com/yukaizhao/ http://weibo.com/yukaizhao/
+        参与项目或技术交流：yukaizhao@gmail.com
+        */
+
+        var painter;// = new Painter('canvasKL', kl, data);
+        var initialWidth = Math.min(screen.width, 1024) - 40;//强制设置大小
+
+        function drawKL(ranges) {
+            var kOptions = {
+                backgroundColor: '#fff',
+                riseColor: 'red',
+                fallColor: 'green',
+                normalColor: 'black',
+                //主图区域的边距
+                chartMargin: {left: 45.5, top: 20.5, right: 20.5},
+                region: {x: 45.5, y: 20.5, width: initialWidth - 45.5 - 20.5, height: 250},
+                barWidth: 5,
+                spaceWidth: 2,
+                horizontalLineCount: 7,
+                verticalLineCount: 7,
+                lineStyle: 'solid',
+                borderColor: 'gray',
+                splitLineColor: '#eeeeee',
+                lineWidth: 1,
+                MAs: [
+                    {color: 'rgb(255,70,251)', daysCount: 5},//5日均线
+                    {color: 'rgb(227,150,34)', daysCount: 10},
+                    {color: 'rgb(53,71,107)', daysCount: 20}/*,
+                    { color: 'rgb(0,0,0)', daysCount: 60 }*/
+                ],
+                yAxis: {  //Y轴字体
+                    font: '11px Arial', // region: { },
+                    color: 'black',
+                    align: 'right',
+                    fontHeight: 8,
+                    textBaseline: 'top'
+                },
+                xAxis: {  //X轴字体
+                    font: '11px Arial', // region: { },
+                    color: 'black',
+                    align: 'right',
+                    fontHeight: 8,
+                    textBaseline: 'top',
+                    scalerCount: 9
+                },
+                volume: { //成交量字体
+                    region: {x: 45.5, y: 290.5, height: 80, width: initialWidth - 45.5 - 20.5},
+                    horizontalLineCount: 1,
+                    yAxis: {
+                        font: '11px Arial', // region: { },
+                        color: 'black',//字体颜色
+                        align: 'right',
+                        fontHeight: 8,
+                        textBaseline: 'top'
+                    }
+                },
+                priceLine: {  //最下方价格字体
+                    region: {x: 45.5, y: 380.5, height: 60, width: initialWidth - 45.5 - 20.5},
+                    verticalLineCount: 7,
+                    horizontalLineCount: 1,
+                    lineStyle: 'solid',
+                    borderColor: 'gray',
+                    splitLineColor: '#eeeeee',
+                    fillColor: 'lightgray',
+                    alpha: .5,
+                    yAxis: {
+                        font: '11px Arial', // region: { },
+                        color: 'black',
+                        align: 'right',
+                        fontHeight: 8,
+                        textBaseline: 'top'
+                    }
+                },
+                controller: {//控制条
+                    bar: {width: 20, height: 35, borderColor: 'black', fillColor: 'lightgray'},
+                    minBarDistance: 20
+                }
+
+            };
+
+            if (!painter) {
+                var canvas = $id('canvasKL');
+                if (canvas.width != initialWidth) canvas.width = initialWidth;
+                var kl = new kLine(kOptions);//加载各种颜色字体设置
+                var data = getKLData();//得到数据
+                painter = new Painter('canvasKL', kl, data);//画图
+            }
+            painter.dataRanges = ranges;
+            painter.paint();
+        }
+
+    </script>
+
+
+</head>
+
+<div class="wrap">
+    <div class="kke_menus_tab_edage">
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_t1" data-view="t1" data-type="T"
+             style="margin-left: 15px;"><a data-a="a">分时</a></div>
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_t5" data-view="t5" data-type="T" style="margin-left: 0px;"><a
+                data-a="a">5日</a></div>
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_kcl" data-view="kcl" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">年线</a></div>
+        <div class="kke_menus_tab_normal kke_menus_tab_active"  onclick="drawKL()" data-id="KKE_tab_kd" data-view="kd" data-type="K"
+             style="margin-left: 0px;"><a
+                data-a="a">日K</a></div>
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_kw" data-view="kw" data-type="K" style="margin-left: 0px;"><a
+                data-a="a">周K</a></div>
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_km" data-view="km" data-type="K" style="margin-left: 0px;"><a
+                data-a="a">月K</a></div>
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_k5" data-view="k5" data-type="K" style="margin-left: 0px;"><a
+                data-a="a">5分</a></div>
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_k15" data-view="k15" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">15分</a></div>
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_k30" data-view="k30" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">30分</a></div>
+        <div class="kke_menus_tab_normal" data-id="KKE_tab_k60" data-view="k60" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">60分</a></div>
+    </div>
+
+    <div id="divinstruction">
+        <canvas id="canvasKL" width="984" height="460" style="z-index: 2; border: 1px solid #dde4f4">
+            <p>hey,您的浏览器不支持html5，换个浏览器吧，比如google chrome，firefox</p>
+        </canvas>
+    </div>
+</div>
+<div class="wrap">
+    <span style="float: right;margin:4px 5px 0 0">Powered by <a href="http://www.9158.com"
+                                                                target="_blank">TGAI</a></span>
+</div>
+
+
+<canvas id="canvasKL_controller" width="918" height="60"
+        style="left: 510.5px; top: 430.5px; position: absolute; z-index: 21; display: block;"></canvas>
+
+</body>
+</html>

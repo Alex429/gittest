@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title1</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+</head>
+
+
+<body>
+    <canvas id="trendLine"></canvas>
+    <canvas id="kLine"></canvas>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/stock-chart.js"/>
+
+    <script>
+    // 分时
+    StockChart.drawTrendLine({
+        id: 'trendLine',
+        width: document.body.clientWidth - 20,
+        height: 180,
+        prices: prices,
+        volumes: volumes,
+        avgPrices: avgPrices,
+        preClosePrice: 9.66
+    });
+
+    // K 线
+    StockChart.drawKLine({
+        id: 'kLine',
+        width: document.body.clientWidth - 20,
+        height: 180,
+        ohlcPrices: ohlcPrices,
+        volumes: volumes,
+        dates: dates,
+        maLists: [
+            {
+                title: 'MA5',
+                prices: ma5Prices
+            },
+            {
+                title: 'MA10',
+                prices: ma10Prices
+            },
+            {
+                title: 'MA20',
+                prices: ma20Prices
+            }
+        ],
+        period: 0
+    });
+    </script>
+</body>
+</html>

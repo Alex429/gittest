@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+
+<head>
+  <meta charset="utf-8">
+  <title>EChartsCxTest1</title>
+  <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.7.2.min.js"></script>
+
+  <!-- 引入 echarts.js -->
+  <!--<script src="../js/echarts.min.js"></script>-->
+
+  <!--<script src="./js/jquery.min.js"></script>-->
+  <!--<script src="./js/loading.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/util.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/absPainter.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/ajax.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/crossLines.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/axis-x.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/tip.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/linepainter.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/volumePainter.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/axis-y.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script src="./js/chartEventHelper.js" type="text/javascript" charset="GBK"></script>-->
+  <!--<script type="text/javascript" src="./js/controller.js" charset="GBK"></script>-->
+  <!--<script type="text/javascript" src="./js/k-data.js"></script>-->
+  <!--<script type="text/javascript" src="./js/tag.js"></script>-->
+  <!--<script type="text/javascript" src="./js/window.js"></script>-->
+  <!--<script type="text/javascript" src="./js/kline.js"></script>-->
+
+  <style>
+    #tkChart_wwygb_jmei {
+      display: block;
+    }
+    .kke_cfg_ctn {
+      position: absolute;
+      right: 0;
+      top: 4px;
+      z-index: 301;
+    }
+    .kke_cfg_fullscreen {
+      float: left;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      margin-right: 5px;
+      background: url(//n.sinaimg.cn/finance/chartimg/chart_setting_icons.png?2017) -1px 0px no-repeat;
+    }
+    .kke_cfg_share {
+      float: left;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      margin-right: 5px;
+      background: url(//n.sinaimg.cn/finance/chartimg/chart_setting_icons.png?2017) no-repeat 7px -72px;
+    }
+  </style>
+
+  <style>
+    #KKE_menu {
+      display: block;
+      height: 100%;
+      width: 100%;
+      position: relative;
+      user-select: none;
+    }
+
+    .kke_menus_tab_edage {
+      /*display: flex;*/
+      width: 100%;
+      height: 30px;
+      border-top: 1px solid #dde4f4;
+      border-bottom: 1px solid #dde4f4;
+      background-color: #EFF5FF;
+      position: relative;
+      z-index: 233;
+    }
+
+    .kke_menus_tab_normal {
+      width: 47px;
+      height: 25px;
+      line-height: 25px;
+      margin-top: 3px;
+      float: left;
+      background: #EFF5FF;
+      border: 1px solid #EFF5FF;
+      color: #08237a;
+      text-align: center;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .kke_menus_tab_normal a {
+      color: #1f2d4a;
+      text-decoration: none;
+    }
+  </style>
+
+  <style>
+  #blankctn__gb_jmei {
+    line-height: 12px;
+    font-size: 12px;
+    height: 22px;
+    user-select: none;
+  }
+
+  .kke_indicators_tab_normal {
+    list-style: none;
+    float: left;
+    background: #efefef;
+    border: 1px solid #d5d5d5;
+    color: #888;
+    margin-left: -1px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  </style>
+
+  <style>
+    #mainarea__gb_jmei {
+
+    }
+
+  </style>
+
+
+  <script>
+      $(document).ready(function(){
+          $("#KKE_tab_km").click(function(){
+              alert("Text: ");
+
+              // $.get(URL,data,function(data,status,xhr),dataType)
+
+              $.get("/Kline/GetDataKm","Km",function(data,status){
+                  alert("Data: " + data.data.data_count + "  Status: " + status);
+                  var cxkLine = data.data
+                  var data = cxkLine.detail_list;
+
+                  // 基于准备好的dom，初始化echarts实例
+                  // var myChart = echarts.init(document.getElementById('main'));
+
+                  // 使用刚指定的配置项和数据显示图表。
+                  // myChart.setOption(option);
+                  // console.log(kLine.result);
+                  // var data = kLine.result.detail_list;
+                  var ohlcPrices = [];
+                  var volumes = [];
+                  var dates = [];
+                  var ma5Prices = [];
+                  var ma10Prices = [];
+                  var ma20Prices = [];
+
+                  var ma30Prices = [];
+
+                  for (var i = 0, len = data.length; i < len; i++) {
+                      ohlcPrices.push({
+                          o: parseFloat(data[i].open_px),
+                          h: parseFloat(data[i].high_px),
+                          l: parseFloat(data[i].low_px),
+                          c: parseFloat(data[i].close_px)
+                      });
+                      volumes.push(parseFloat(data[i].business_amount));
+                      dates.push(data[i].min_time.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2'));
+                      ma5Prices.push(parseFloat(data[i].ma5));
+                      ma10Prices.push(parseFloat(data[i].ma10));
+                      ma20Prices.push(parseFloat(data[i].ma20));
+
+                      ma30Prices.push(parseFloat(data[i].open_px))
+                  }
+
+                  StockChart.drawKLine({
+                      id: 'kLine',
+                      width: document.getElementById("mainarea__gb_jmei").clientWidth ,
+                      height: document.getElementById("mainarea__gb_jmei").offsetHeight,
+                      ohlcPrices: ohlcPrices,
+                      volumes: volumes,
+                      dates: dates,
+                      maLists: [
+                          {
+                              title: 'MA5',
+                              prices: ma5Prices
+                          },
+                          {
+                              title: 'MA10',
+                              prices: ma10Prices
+                          },
+                          {
+                              title: 'MA20',
+                              prices: ma20Prices
+                          },
+                          {
+                              title: 'MA30',
+                              prices: ma30Prices
+                          }
+                      ],
+                      period: 0
+                  });
+
+
+              },"json");
+
+          });
+
+          $("#btn2").click(function(){
+              alert("HTML: " + $("#test").html());
+          });
+      });
+  </script>
+
+
+
+  <script type="text/javascript">
+
+    function drawKd() {
+        // 基于准备好的dom，初始化echarts实例
+        // var myChart = echarts.init(document.getElementById('main'));
+
+        // 使用刚指定的配置项和数据显示图表。
+        // myChart.setOption(option);
+        console.log(kLine.result);
+        var data = kLine.result.detail_list;
+        var ohlcPrices = [];
+        var volumes = [];
+        var dates = [];
+        var ma5Prices = [];
+        var ma10Prices = [];
+        var ma20Prices = [];
+
+        var ma30Prices = [];
+
+        for (var i = 0, len = data.length; i < len; i++) {
+            ohlcPrices.push({
+                o: parseFloat(data[i].open_px),
+                h: parseFloat(data[i].high_px),
+                l: parseFloat(data[i].low_px),
+                c: parseFloat(data[i].close_px)
+            });
+            volumes.push(parseFloat(data[i].business_amount));
+            dates.push(data[i].min_time.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2'));
+            ma5Prices.push(parseFloat(data[i].ma5));
+            ma10Prices.push(parseFloat(data[i].ma10));
+            ma20Prices.push(parseFloat(data[i].ma20));
+
+            ma30Prices.push(parseFloat(data[i].open_px))
+        }
+
+        StockChart.drawKLine({
+            id: 'kLine',
+            width: document.getElementById("mainarea__gb_jmei").clientWidth ,
+            height: document.getElementById("mainarea__gb_jmei").offsetHeight,
+            ohlcPrices: ohlcPrices,
+            volumes: volumes,
+            dates: dates,
+            maLists: [
+                {
+                    title: 'MA5',
+                    prices: ma5Prices
+                },
+                {
+                    title: 'MA10',
+                    prices: ma10Prices
+                },
+                {
+                    title: 'MA20',
+                    prices: ma20Prices
+                },
+                {
+                    title: 'MA30',
+                    prices: ma30Prices
+                }
+            ],
+            period: 0
+        });
+    }
+
+    function drawKw() {
+        // 基于准备好的dom，初始化echarts实例
+        // var myChart = echarts.init(document.getElementById('main'));
+
+        // 使用刚指定的配置项和数据显示图表。
+        // myChart.setOption(option);
+        console.log(kLine2.result);
+        var data = kLine2.result.detail_list;
+        var ohlcPrices = [];
+        var volumes = [];
+        var dates = [];
+        var ma5Prices = [];
+        var ma10Prices = [];
+        var ma20Prices = [];
+
+        var ma30Prices = [];
+
+        for (var i = 0, len = data.length; i < len; i++) {
+            ohlcPrices.push({
+                o: parseFloat(data[i].open_px),
+                h: parseFloat(data[i].high_px),
+                l: parseFloat(data[i].low_px),
+                c: parseFloat(data[i].close_px)
+            });
+            volumes.push(parseFloat(data[i].business_amount));
+            dates.push(data[i].min_time.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2'));
+            ma5Prices.push(parseFloat(data[i].ma5));
+            ma10Prices.push(parseFloat(data[i].ma10));
+            ma20Prices.push(parseFloat(data[i].ma20));
+
+            ma30Prices.push(parseFloat(data[i].open_px))
+        }
+
+        StockChart.drawKLine({
+            id: 'kLine',
+            width: document.getElementById("mainarea__gb_jmei").clientWidth ,
+            height: document.getElementById("mainarea__gb_jmei").offsetHeight,
+            ohlcPrices: ohlcPrices,
+            volumes: volumes,
+            dates: dates,
+            maLists: [
+                {
+                    title: 'MA5',
+                    prices: ma5Prices
+                },
+                {
+                    title: 'MA10',
+                    prices: ma10Prices
+                },
+                {
+                    title: 'MA20',
+                    prices: ma20Prices
+                },
+                {
+                    title: 'MA30',
+                    prices: ma30Prices
+                }
+            ],
+            period: 0
+        });
+    }
+
+  </script>
+  
+</head>
+
+<body>
+  <script src="/js/table.js"></script>
+  <script src="/js/data1.js"></script>
+  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+  <!--<div id="main" style="width: 1400px;height:1000px;"></div>-->
+  <!--<div id="main" style="width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); position: fixed; z-index: 8888; top: 0px; left: 0px;"></div>-->
+
+  <!--背景-->
+  <div style="width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); position: fixed; z-index: 8888; top: 0px; left: 0px;"></div>
+  <!--画布页面-->
+  <div style="background-color: rgb(255, 255, 255); width: 96%; height: 98%; top: 1%; left: 2%; z-index: 8889; position: fixed; text-align: left;">
+
+    <!--画布-->
+    <div id="tkChart_wwygb_jmei" style="height: 100%; width: 100%; position: relative; user-select: none;">
+      <!--头 菜单功能键  日k  月k -->
+      <div id="KKE_menu" style="height: 30px;">
+        <div class="kke_menus_tab_edage">
+          <div class="kke_menus_tab_normal" data-id="KKE_tab_t1" data-view="t1" data-type="T" style="margin-left: 15px;">
+            <a data-a="a">分时</a></div>
+          <div class="kke_menus_tab_normal" data-id="KKE_tab_t5" data-view="t5" data-type="T" style="margin-left: 0px;">
+            <a data-a="a">5日</a></div>
+          <div class="kke_menus_tab_normal" data-id="KKE_tab_kcl" data-view="kcl" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">年线</a></div>
+          <div class="kke_menus_tab_normal kke_menus_tab_active" onclick="drawKd()" data-id="KKE_tab_kd" data-view="kd"data-type="K" style="margin-left: 0px;">
+            <a data-a="a">日K</a></div>
+          <div class="kke_menus_tab_normal" onclick="drawKw()" data-id="KKE_tab_kw" data-view="kw" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">周K</a></div>
+          <div class="kke_menus_tab_normal"  id="KKE_tab_km" data-id="KKE_tab_km" data-view="km" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">月K</a></div>
+          <div class="kke_menus_tab_normal" data-id="KKE_tab_k5" data-view="k5" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">5分</a></div>
+          <div class="kke_menus_tab_normal" data-id="KKE_tab_k15" data-view="k15" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">15分</a></div>
+          <div class="kke_menus_tab_normal" data-id="KKE_tab_k30" data-view="k30" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">30分</a></div>
+          <div class="kke_menus_tab_normal" data-id="KKE_tab_k60" data-view="k60" data-type="K" style="margin-left: 0px;">
+            <a data-a="a">60分</a></div>
+        </div>
+
+        <!--<div id="divinstruction">-->
+        <!--<canvas id="canvasKL" width="984" height="460" style="z-index: 2; border: 1px solid #dde4f4">-->
+        <!--<p>hey,您的浏览器不支持html5，换个浏览器吧，比如google chrome，firefox</p>-->
+        <!--</canvas>-->
+        <!--</div>-->
+      </div>
+
+      <!--头 动态数据显示-->
+      <div id="KKE_range"
+           style="clear: both; margin-left: 5px; white-space: nowrap; font-size: 12px; padding-top: 4px; height: 20px; line-height: 20px;">
+        2018/06/25/一16:00
+        <span style="color:#666; margin-left:5px;margin-right:1px;border:#ffffff solid 1px;padding: 1px 2px;text-align: center;">价</span>
+        <span style="color:#f11200; display: inline-block;">2.79</span>
+        <span style="color:#666; margin-left:5px;margin-right:1px;border:#ffffff solid 1px;padding: 1px 2px;text-align: center;">均</span>
+        <span style="color:#f11200; display: inline-block;">2.79</span>
+        <span style="color:#666; margin-left:5px;margin-right:1px;border:#ffffff solid 1px;padding: 1px 2px;text-align: center;">量</span>
+        <span style="display: inline-block;">0</span>
+        <span style="color:#666; margin-left:5px;margin-right:1px;border:#ffffff solid 1px;padding: 1px 2px;text-align: center;">幅</span>
+        <span style="color:#f11200; display: inline-block;">-2.11%</span>
+      </div>
+
+      <!--主图-->
+      <div id="KKE_chart" style="height: 88.0851%;">
+        <div style="position: relative; outline-style: none; user-select: none;" tabindex="0">
+
+          <!--上方走势图-->
+          <div id="mainarea__gb_jmei" style="height: 471px;">
+              <!--<canvas width="1717" height="145" style="position: absolute; top: 13px; left: 55px; width: 1717px; height: 145px; z-index: 35;"></canvas>-->
+              <!--<canvas width="1717" height="145" tabindex="0" style="position: absolute; top: 13px; left: 55px; width: 1717px; height: 145px; z-index: 55; outline: none; display: none;"></canvas>-->
+              <canvas id="kLine"> 您的浏览器不支持 HTML5 canvas 标签。 </canvas>
+              <div></div>
+
+              <div style="position: absolute; font-size: 12px;"></div>
+              <div style="width: 40px; height: 30px; margin: 0px; position: absolute; z-index: 1; top: 70.5px; left: 893.5px; display: none;">
+                <span style="display: inline-block; width: 4px; height: 30px; margin: 0px 2px; border-radius: 5px; animation: KKELoading 1.2s -1s infinite; background: rgb(255, 84, 114);"></span>
+                <span style="display: inline-block; width: 4px; height: 30px; margin: 0px 2px; border-radius: 5px; animation: KKELoading 1.2s -0.9s infinite; background: rgb(255, 112, 110);"></span>
+                <span style="display: inline-block; width: 4px; height: 30px; margin: 0px 2px; border-radius: 5px; animation: KKELoading 1.2s -0.8s infinite; background: rgb(255, 135, 98);"></span>
+                <span style="display: inline-block; width: 4px; height: 30px; margin: 0px 2px; border-radius: 5px; animation: KKELoading 1.2s -0.7s infinite; background: rgb(255, 175, 76);"></span>
+                <span style="display: inline-block; width: 4px; height: 30px; margin: 0px 2px; border-radius: 5px; animation: KKELoading 1.2s -0.6s infinite; background: rgb(255, 213, 62);"></span>
+              </div>
+
+              <!--<canvas width="1717" height="145" style="position: absolute; z-index: 30; top: 13px; left: 55px; width: 1717px; height: 145px;"></canvas>-->
+              <!--<canvas style="position: absolute; z-index: 50; top: 13px; left: 55px; width: 1717px; height: 145px; cursor: default;"></canvas>-->
+              <!--<canvas width="1827" height="171" style="position: absolute; z-index: 0; width: 1827px; height: 171px; left: 0px; top: 0px;"></canvas>-->
+              <div style="position: absolute; z-index: 48; width: 1772px; top: 348px; display: none;">
+                <span style="position: absolute; z-index: 1; font: 12px/12px helvetica, arial, sans-serif; white-space: nowrap; text-align: right; background-color: rgb(73, 73, 73); color: rgb(255, 255, 255); top: -7.2px; left: 0px; width: 55px; padding: 1px 0px;">2.76</span>
+                <span style="position: absolute; z-index: 1; font: 12px/12px helvetica, arial, sans-serif; white-space: nowrap; text-align: left; background-color: rgb(73, 73, 73); color: rgb(255, 255, 255); top: -7.2px; left: 1772px; width: 55px; padding: 1px 0px;">-3.08%</span>
+                <div style="position: absolute; z-index: 0; border-style: dashed; border-color: rgb(73, 73, 73); border-width: 1px 0px 0px; width: 1772px;"></div>
+              </div>
+            </div>
+
+
+          <!--下方图-->
+          <div id="mainarea__gb_jmei_down">
+            <!--交易量-->
+            <div style="line-height: 12px; font-size: 12px;">
+
+              <div style="position: absolute; z-index: 51; width: 100%;">
+                <div style="position: absolute; right: 9px; color: rgb(0, 0, 0); opacity: 0.1; z-index: 52;"><span
+                        data-dir="-1" style="margin-left: 9px; cursor: pointer;">▲</span>
+                  <span data-dir="1" style="margin-left: 9px; cursor: pointer;">▼</span>
+                </div>
+                <div style="position: absolute; right: 49px; color: rgb(0, 0, 0); opacity: 0.1; z-index: 52; padding-top: 3px;">
+                  <span style="display: block; cursor: row-resize; border-top: 2px dotted rgb(0, 0, 0); border-bottom: 2px dotted rgb(0, 0, 0); width: 77px; height: 2px;"></span>
+                </div>
+                <div style="cursor: pointer; position: relative; z-index: 51; color: rgb(119, 119, 119); font-size: 12px; font-family: helvetica, arial, sans-serif;">
+                  <div style="float: left; text-align: right; margin-right: 9px; overflow: hidden; width: 55px;">成交</div>
+                  <div style="margin-left: 55px;">
+                    <span style="float:left;min-width:80px;margin-right:11px;color:#888887">VOL: 0.00</span>
+                    <span style="float:left;min-width:80px;margin-right:11px;color:#12BDD9">MA10: 4223.30</span></div>
+                </div>
+              </div>
+
+              <div style="position: relative; height: 74px;">
+                <!--<canvas width="1717" height="60" style="position: absolute; z-index: 30; top: 14px; left: 55px; width: 1717px; height: 60px;"></canvas>-->
+                <!--<canvas style="position: absolute; z-index: 50; top: 14px; left: 55px; width: 1717px; height: 60px;"></canvas>-->
+                <!--<canvas width="1827" height="74" style="position: absolute; z-index: 0; width: 1827px; height: 74px; left: 0px; top: 0px;"></canvas>-->
+              </div>
+
+            </div>
+
+
+            <!--选择的 macd rsi 等-->
+            <div style="line-height: 12px; font-size: 12px;">
+              <div style="position: absolute; z-index: 51; width: 100%;">
+                <div style="position: absolute; right: 9px; color: rgb(0, 0, 0); opacity: 0.1; z-index: 52;">
+                  <span data-dir="-1" style="margin-left: 9px; cursor: pointer;">▲</span>
+                  <span data-dir="1" style="margin-left: 9px; cursor: pointer;">▼</span>
+                </div>
+
+                <div style="position: absolute; right: 49px; color: rgb(0, 0, 0); opacity: 0.1; z-index: 52; padding-top: 3px;">
+                  <span style="display: block; cursor: row-resize; border-top: 2px dotted rgb(0, 0, 0); border-bottom: 2px dotted rgb(0, 0, 0); width: 77px; height: 2px;"></span>
+                </div>
+
+                <div style="cursor: pointer; position: relative; z-index: 51; color: rgb(119, 119, 119); font-size: 12px; font-family: helvetica, arial, sans-serif;">
+                  <div style="float: left; text-align: right; margin-right: 9px; overflow: hidden; width: 55px;">TRIX</div>
+                  <div style="margin-left: 55px;"><span
+                          style="float:left;min-width:80px;margin-right:11px;color:#d6c84b">TRIX: 0.00</span><span
+                          style="float:left;min-width:80px;margin-right:11px;color:#26bcd5">MATRIX: 0.00</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <div style="position: relative; height: 74px;">
+                <!--<canvas width="1717" height="60" style="position: absolute; z-index: 30; top: 14px; left: 55px; width: 1717px; height: 60px;"></canvas>-->
+                <!--<canvas style="position: absolute; z-index: 50; top: 14px; left: 55px; width: 1717px; height: 60px; cursor: default;"></canvas>-->
+                <!--<canvas width="1827" height="74" style="position: absolute; z-index: 0; width: 1827px; height: 74px; left: 0px; top: 0px;"></canvas>-->
+
+                <div style="position: absolute; z-index: 48; width: 1772px; top: 71px; display: none;">
+                  <span style="position: absolute; z-index: 1; font: 12px/12px helvetica, arial, sans-serif; white-space: nowrap; text-align: right; background-color: rgb(73, 73, 73); color: rgb(255, 255, 255); top: -7.2px; left: 0px; width: 55px; padding: 1px 0px;">-0.1220</span>
+                  <span style="position: absolute; z-index: 1; font: 12px/12px helvetica, arial, sans-serif; white-space: nowrap; text-align: left; background-color: rgb(73, 73, 73); color: rgb(255, 255, 255); top: -7.2px; left: 1772px; width: 55px; padding: 1px 0px; display: none;">-5.06%</span>
+                  <div style="position: absolute; z-index: 0; border-style: dashed; border-color: rgb(73, 73, 73); border-width: 1px 0px 0px; width: 1772px;"></div>
+                </div>
+              </div>
+            </div>
+
+
+            <!--选择按钮-->
+            <div id="blankctn__gb_jmei" style="line-height: 12px; font-size: 12px; height: 22px;">
+              <div style="float: left; margin: 0px 9px 0px 54px;">
+                <span class="kke_indicators_tab_arrow" data-dir="-1" style="color: rgb(0, 0, 0);">▲</span>
+                <span class="kke_indicators_tab_arrow" data-dir="1" style="color: rgb(0, 0, 0);">▼</span>
+              </div>
+
+              <div style="margin: 0px 60px 0px 104px;">
+                <ul style="list-style: none; padding: 0px; margin: 0px;">
+                  <li data-indicator="无" class="kke_indicators_tab_normal" style="width: 61px;">无</li>
+                  <li data-indicator="LB" class="kke_indicators_tab_normal" style="width: 61px;">量比</li>
+                  <li data-indicator="MACD" class="kke_indicators_tab_normal" style="width: 61px;">MACD</li>
+                  <li data-indicator="BOLL" class="kke_indicators_tab_normal" style="width: 61px;">BOLL</li>
+                  <li data-indicator="RSI" class="kke_indicators_tab_normal" style="width: 61px;">RSI</li>
+                  <li data-indicator="BBIBOLL" class="kke_indicators_tab_normal" style="width: 61px;">BBIBOLL</li>
+                  <li data-indicator="ROC" class="kke_indicators_tab_normal kke_indicators_tab_active"
+                      style="width: 61px;">ROC
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+        <!--<div id="main" style="height: 88.0851%;"></div>-->
+
+        <!--菜单功能键 右侧 功能按钮-->
+        <div class="kke_cfg_ctn">
+          <div title="退出全屏" class="kke_cfg_fullscreen"
+               style="background: url( //n.sinaimg.cn/finance/chartimg/chart_setting_icons.png?2017 ) -1px 0px no-repeat;"></div>
+          <div title="更多" class="kke_cfg_share"></div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+
+
+</body>
+
+</html>

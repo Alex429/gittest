@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task-3.2.xsd ">
+
+
+
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <mvc:resources location="/WEB-INF/html/" mapping="/html/**"/>
+    <mvc:resources location="/WEB-INF/js/" mapping="/js/**"/>
+    <!-- 扫描指定包带@Controller注解的类-->
+    <context:component-scan base-package="com.orange.controller"></context:component-scan>
+    <!-- 处理请求返回json字符串的中文乱码问题 -->
+
+    <!--视图解析器-->
+    <!--   视图解析器 InternalResourceViewResolver是一个辅助bean,会在ModelAndView前加上prefix指定的前缀和suffix的后缀-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/html/"/>
+        <!--<property name="prefix" value="/WEB-INF/jsp/"/>-->
+        <property name="suffix" value=".html"/>
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.InternalResourceView"/> <!-- 不能用jstl的那个 -->
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <property name="order" value="0"></property>
+    </bean>
+
+    <!-- SpringMVC上传文件时，需要配置MultipartResolver处理器 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <!-- 指定所上传文件的总大小,单位字节。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+        <property name="maxUploadSize" value="10240000"/>
+        <property name="maxInMemorySize" value="514"/>
+    </bean>
+    <!--<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+        <property name="dateFormat">
+            <bean class="java.text.SimpleDateFormat">
+                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />
+            </bean>
+        </property>
+    </bean>-->
+
+
+</beans>
+

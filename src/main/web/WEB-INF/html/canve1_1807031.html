@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <meta charset="utf-8">
+    <title>canvetest1</title> 
+</head>
+
+<body>
+<script src="../js/table.js"></script>
+<script src="../js/data1.js"></script>
+
+
+<div style="background-color: rgb(255, 255, 255); width: 96%; height: 98%; top: 1%; left: 2%; z-index: 8889; position: fixed; text-align: left;">
+    <div id="tkChart_wwygb_jmei" style="height: 100%; width: 100%; position: relative; user-select: none;">
+        <!--画布-->
+        <div id="updraw" style="height: 70%; width: 100%; position: relative; user-select: none;">
+            <canvas id="kLine">
+                您的浏览器不支持 HTML5 canvas 标签。
+            </canvas>
+        </div>
+
+        <div id="downdraw" style="height: 30%; width: 100%; position: relative; user-select: none;">您的浏览器不支持 HTML5 canvas 标签。</div>
+    </div>
+</div>
+
+<script>
+    console.log(kLine.result);
+    var data = kLine.result.detail_list;
+    var ohlcPrices = [];
+    var volumes = [];
+    var dates = [];
+    var ma5Prices = [];
+    var ma10Prices = [];
+    var ma20Prices = [];
+
+    var ma30Prices = [];
+
+    for (var i = 0, len = data.length; i < len; i++) {
+        ohlcPrices.push({
+            o: parseFloat(data[i].open_px),
+            h: parseFloat(data[i].high_px),
+            l: parseFloat(data[i].low_px),
+            c: parseFloat(data[i].close_px)
+        });
+        volumes.push(parseFloat(data[i].business_amount));
+        dates.push(data[i].min_time.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2'));
+        ma5Prices.push(parseFloat(data[i].ma5));
+        ma10Prices.push(parseFloat(data[i].ma10));
+        ma20Prices.push(parseFloat(data[i].ma20));
+
+        ma30Prices.push(parseFloat(data[i].open_px))
+    }
+
+    StockChart.drawKLine({
+        id: 'kLine',
+        width: document.getElementById("updraw").clientWidth,
+        height: document.getElementById("updraw").offsetHeight,
+        ohlcPrices: ohlcPrices,
+        volumes: volumes,
+        dates: dates,
+        maLists: [
+            {
+                title: 'MA5',
+                prices: ma5Prices
+            },
+            {
+                title: 'MA10',
+                prices: ma10Prices
+            },
+            {
+                title: 'MA20',
+                prices: ma20Prices
+            },
+            {
+                title: 'MA30',
+                prices: ma30Prices
+            }
+        ],
+        period: 0
+    });
+</script>
+
+</body>
+</html>
